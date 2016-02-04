@@ -12,9 +12,9 @@ var userRepo Repo
 func main() {
 	fmt.Println("whats this")
 	
-
+	// doGitStuff()
 	//lets open the repository
-	userRepo.repo = openRepository("/Users/alex/go/src/github.com/collaborateMD/repo/")
+	userRepo.openRepository("/Users/alex/go/src/github.com/repo/")
 	go h.run()
 	http.Handle("/", http.FileServer(http.Dir("./public")))
 	http.HandleFunc("/ws", serveWs)

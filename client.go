@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	// "fmt"
 	"net/http"
 	"time"
@@ -39,8 +38,80 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: maxMessageSize,
 }
 
+func doGitStuff() {
+	signature := &git.Signature{
+		Name: "David Calavera",
+		Email: "david.calavera@gmail.com",
+		When: time.Now(),
+	}
+
+    files, _ := ioutil.ReadDir("/Users/alex/go/src/github.com/repo/")
+    for _, f := range files {
+            log.Println(f.Name())
+    }
+	repo, err := git.OpenRepository("/Users/alex/go/src/github.com/repo/")
+	log.Println(repo)
+    if err != nil {
+        panic(err)
+    }
+
+    //get the head:
+    head, err := repo.Head()
+	if err != nil {
+		panic(err)
+	}
+
+	headCommit, err := repo.LookupCommit(head.Target())
+	if err != nil {
+		panic(err)
+	}
+	//create a branch
+	var branch *git.Branch
+	branch, err = repo.CreateBranch("whatisthename", headCommit, false)
+	if err != nil {
+		panic(err)
+	}
+
+	//add a file to the staging area:
+	idx, err := repo.Index()
+	if err != nil {
+		panic(err)
+	}
+
+	err = idx.AddByPath("storage.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	treeId, err := idx.WriteTree()
+	if err != nil {
+		panic(err)
+	}
+
+	err = idx.Write()
+	if err != nil {
+		panic(err)
+	}
+	//commit the change:
+	tree, err := repo.LookupTree(treeId)
+	if err != nil {
+		panic(err)
+	}
+
+	commitTarget, err := repo.LookupCommit(branch.Target())
+	if err != nil {
+		panic(err)
+	}
+
+	message := "What a day"
+	_, err = repo.CreateCommit("refs/heads/whatisthename", signature, signature, message, tree, commitTarget)
+	if err != nil {
+		panic(err)
+	}
+}
+
 //open repository
-func openRepository(loc string) *git.Repository {
+func (r *Repo) openRepository(loc string) {
 	userRepo.location = loc
 	repo, err := git.OpenRepository(userRepo.location)
 	log.Println(repo)
@@ -48,7 +119,7 @@ func openRepository(loc string) *git.Repository {
         panic(err)
     }
 
-	return repo
+	r.repo = repo
 }
 //create branch for user
 func (r *Repo) createBranch(branchName string) {
@@ -72,14 +143,14 @@ func (r *Repo) createBranch(branchName string) {
 }
 //stage changes
 func (r *Repo) stageChanges() {
-	log.Println("staging changes");
+	log.Println("staging changes")
+
 	//add a file to the staging area:
 	idx, err := r.repo.Index()
 	if err != nil {
 		panic(err)
 	}
-	dir, _ := os.Getwd()
-	err = idx.AddByPath(dir + "/repo/storage.txt")
+	err = idx.AddByPath("storage.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -132,7 +203,7 @@ func (r *Repo) commitChanges(message string) {
 
 //     files, _ := ioutil.ReadDir("/files")
 //     for _, f := range files {
-//             fmt.Println(f.Name())
+//             log.Println(f.Name())
 //     }
 // }
 
