@@ -4,7 +4,8 @@ $(function() {
     }
 
     var content = $("#content");
-    var conn = new WebSocket('ws://' + window.location.host + '/ws');
+    var identity = Math.floor(Math.random() * 90 + 10);
+    var conn = new WebSocket('ws://' + window.location.host + '/ws?id='+identity);
 
     // Textarea is editable only when socket is opened.
     conn.onopen = function(e) {
