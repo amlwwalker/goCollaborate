@@ -1,11 +1,24 @@
-$(function() {
+
+//need to call this function when a file is clicked
+//also close the connection if its open already
+var conn;
+
+// $(function() {
+function startConnection(identity, filename) {
+    if (conn) {
+        conn.close(); //close the websocket    
+    }
+    
+    if (filename == undefined) {
+        return;
+    }
     if (!window["WebSocket"]) {
         return;
     }
 
     var content = $("#content");
-    var identity = Math.floor(Math.random() * 90 + 10);
-    var conn = new WebSocket('ws://' + window.location.host + '/ws?id='+identity);
+    console.log("Connection: " + 'ws://' + window.location.host + '/ws?id='+identity+"&filename="+filename)
+    conn = new WebSocket('ws://' + window.location.host + '/ws?id='+identity+"&filename="+filename);
 
     // Textarea is editable only when socket is opened.
     conn.onopen = function(e) {
@@ -43,4 +56,5 @@ $(function() {
             conn.send(content.val());
         }, 1100);
     });
-});
+}
+// });

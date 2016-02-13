@@ -26,12 +26,6 @@ var h = hub{
 	content:  	 "",
 }
 
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
-}
-
 func (h *hub) run() {
 
 	for { //forever

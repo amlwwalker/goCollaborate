@@ -8,14 +8,35 @@ html, body {
     overflow: hidden;
     height: 100%;
 }
-
+.list {
+    float:left;
+    padding: 10px;
+}
+li {
+    list-style-type: none;
+}
+.main {
+    height:100%;
+    top:0;
+    bottom:0;
+}
+.nav {
+    height: 35px;
+}
+.content {
+    margin: 10px;
+    height: 100%;
+}
 textarea {
+    float:left;
     font-size: 1.5em;
     line-height: 1.5em;
     color: #333;
-    width: calc(100% - 10em);
+    width: calc(80% - 10em);
     height: calc(100% - 4em);
     padding: 2em 5em;
+    border: none;
+    outline:0;
 }
 
 textarea[disabled="disabled"] {

@@ -7,6 +7,46 @@
     <link rel="stylesheet" href="main.css" type="text/css" />
 </head>
 <body>
-    <textarea spellcheck="false" class="doc" id="content" disabled="disabled">Connection en cours...</textarea>
+	<div class="main">
+		<div class="nav">
+			<input name="filename" placeholder="new document name" id="newname">
+			<button class="newdocument">New Document</button>
+			<span class="status"></span>
+		</div>
+		<div class="content">
+			<div class="list">
+				<ul class="files">
+				</ul>
+			</div>
+	    	<textarea spellcheck="false" class="doc" id="content" disabled="disabled">Waiting for a connection...</textarea>
+    	</div>
+    </div>
 </body>
+<script type="text/javascript">
+var identity;
+	$(".newdocument").click(function() {
+		$.get("/new?name="+$("#newname").val(), function(err, data) {
+			console.log(err, " ", data)
+			getDocuments();
+		});
+	});
+
+	$(document).ready(function() {
+	    identity = Math.floor(Math.random() * 90 + 10);
+		getDocuments();
+	})
+	function getDocuments(){
+		$(".files").html('');
+		$.get("/list", function(data) {
+			$.each(data, function(i, element) {
+				var el = $("<li><a href='#' id='element'>"+element+"</a></li>")
+				el.click(function(data) {
+						$(".status").html("Current Document: " + element)
+						startConnection(identity, element);
+				});
+				$(".files").append(el)
+			});
+		});
+	}
+</script>
 </html>
